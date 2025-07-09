@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { getReminderTime } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Calendar, Clock, Plus, X } from 'lucide-react';
 import { FormEventHandler } from 'react';
 import DateTimePicker from 'react-datetime-picker';
@@ -52,12 +52,12 @@ const CreateTodo = () => {
                {/* Header */}
                <div className="mb-8">
                   <div className="mb-4 flex items-center gap-4">
-                     <Button variant="ghost" size="sm" className="p-2">
+                     <Link href={route('todos')} className={buttonVariants({ variant: 'ghost', size: 'icon' })}>
                         <ArrowLeft className="h-4 w-4" />
-                     </Button>
+                     </Link>
                      <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Create New Task</h1>
-                        <p className="mt-1 text-gray-600">Add a new task to your todo list</p>
+                        <h1 className="text-3xl font-bold text-gray-900">Create New Todo</h1>
+                        <p className="mt-1 text-gray-600">Add a new todo to your todo list</p>
                      </div>
                   </div>
                </div>
@@ -67,9 +67,9 @@ const CreateTodo = () => {
                   <CardHeader>
                      <CardTitle className="flex items-center gap-2">
                         <Plus className="h-5 w-5" />
-                        Task Details
+                        Todo Details
                      </CardTitle>
-                     <CardDescription>Fill in the information below to create your new task</CardDescription>
+                     <CardDescription>Fill in the information below to create your new todo</CardDescription>
                   </CardHeader>
                   <CardContent>
                      <form className="space-y-6" onSubmit={submit}>
@@ -81,7 +81,7 @@ const CreateTodo = () => {
                            <Input
                               id="title"
                               type="text"
-                              placeholder="Enter task title..."
+                              placeholder="Enter Todo title..."
                               className={errors.title ? 'border-red-500 focus:border-red-500' : ''}
                               value={data.title}
                               onChange={(e) => setData('title', e.target.value)}
@@ -96,13 +96,13 @@ const CreateTodo = () => {
                            </Label>
                            <Textarea
                               id="description"
-                              placeholder="Enter task description (optional)..."
+                              placeholder="Enter todo description (optional)..."
                               value={data.description}
                               onChange={(e) => setData('description', e.target.value)}
                               rows={4}
                               className="resize-none"
                            />
-                           <p className="text-xs text-gray-500">Provide additional details about your task (optional)</p>
+                           <p className="text-xs text-gray-500">Provide additional details about your todo (optional)</p>
                         </div>
 
                         {/* Complete At Field */}
@@ -123,7 +123,7 @@ const CreateTodo = () => {
                               />
                            </div>
                            {errors.complete_at && <p className="text-sm text-red-600">{errors.complete_at}</p>}
-                           <p className="text-xs text-gray-500">Select when you want to complete this task</p>
+                           <p className="text-xs text-gray-500">Select when you want to complete this todo</p>
                         </div>
 
                         {/* Reminder Info */}
@@ -153,12 +153,12 @@ const CreateTodo = () => {
                               {processing ? (
                                  <>
                                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                                    Creating Task...
+                                    Creating todo...
                                  </>
                               ) : (
                                  <>
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Create Task
+                                    Create Todo
                                  </>
                               )}
                            </Button>
@@ -173,7 +173,7 @@ const CreateTodo = () => {
                {/* Help Text */}
                <div className="mt-6 text-center">
                   <p className="text-sm text-gray-500">
-                     Need help? Tasks with reminders will automatically notify you 10 minutes before the due time.
+                     Need help? Todos with reminders will automatically notify you 10 minutes before the due time.
                   </p>
                </div>
             </div>
