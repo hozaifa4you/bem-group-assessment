@@ -103,8 +103,15 @@ class TodoController extends Controller
    /**
     * Remove the specified resource from storage.
     */
-   public function destroy(string $id)
+   public function destroy(string $slug)
    {
-      //
+      $todo = Todo::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+      if ($todo->user_id !== Auth::id()) {
+         abort(403, 'Unauthorized action.');
+      }
+
+      $todo->delete();
+
+      return redirect()->intended(route('todos', absolute: false));
    }
 }

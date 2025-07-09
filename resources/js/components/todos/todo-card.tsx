@@ -5,17 +5,117 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getReminderTime, isOverdue, isUpcoming } from '@/lib/utils';
 import { Todo } from '@/types/todo';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { Calendar, CheckCircle2, Circle, Clock, Edit3, MoreVertical, Trash2 } from 'lucide-react';
+import { useRef } from 'react';
+import { toast } from 'sonner';
 
 interface TodoCardProps {
    todo: Todo;
 }
 
 const TodoCard = ({ todo }: TodoCardProps) => {
+   const deleteTimerRef = useRef<number | null>(null);
+
+   // Duration in seconds
+   const countdownDuration = 5;
+   const toastIdRef = useRef<string | number | null>(null);
+
+   const handleDelete = () => {
+      let secondsLeft = countdownDuration;
+
+      // Show toast with undo option and countdown
+      const toastId = toast(
+         <div className="flex w-full items-center justify-between">
+            <span>Todo marked for deletion</span>
+            <span className="font-medium">{secondsLeft}s</span>
+         </div>,
+         {
+            description: 'Click Undo to restore this todo.',
+            duration: countdownDuration * 1000,
+            action: {
+               label: 'Undo',
+               onClick: () => {
+                  // Cancel the deletion
+                  if (deleteTimerRef.current) {
+                     clearTimeout(deleteTimerRef.current);
+                     deleteTimerRef.current = null;
+                  }
+                  toast.dismiss(toastId);
+                  toast('Deletion cancelled', {
+                     description: 'The todo has been restored.',
+                  });
+               },
+            },
+         },
+      );
+
+      // Store toast ID for reference
+      toastIdRef.current = toastId;
+
+      // Create countdown effect
+      const countdownInterval = setInterval(() => {
+         secondsLeft -= 1;
+         if (secondsLeft <= 0) {
+            clearInterval(countdownInterval);
+            return;
+         }
+
+         // Update toast content
+         toast(
+            <div className="flex w-full items-center justify-between">
+               <span>Todo marked for deletion</span>
+               <span className="font-medium">{secondsLeft}s</span>
+            </div>,
+            {
+               id: toastId,
+               description: 'Click Undo to restore this todo.',
+               duration: secondsLeft * 1000,
+               action: {
+                  label: 'Undo',
+                  onClick: () => {
+                     if (deleteTimerRef.current) {
+                        clearTimeout(deleteTimerRef.current);
+                        deleteTimerRef.current = null;
+                     }
+                     clearInterval(countdownInterval);
+                     toast.dismiss(toastId);
+                     toast('Deletion cancelled', {
+                        description: 'The todo has been restored.',
+                     });
+                  },
+               },
+            },
+         );
+      }, 1000);
+
+      // Set a timer to actually delete the todo
+      deleteTimerRef.current = window.setTimeout(() => {
+         clearInterval(countdownInterval);
+         performDelete();
+      }, countdownDuration * 1000);
+   };
+
+   const performDelete = () => {
+      router.delete(route('todos.destroy', { slug: todo.slug ?? todo.id }), {
+         preserveScroll: true,
+         onSuccess: () => {
+            toast('Todo deleted', {
+               description: 'The todo has been removed from your list.',
+            });
+         },
+         onError: (error) => {
+            toast('Delete Failed', {
+               description: error.message || 'Failed to delete todo. Please try again.',
+            });
+         },
+         onFinish: () => {},
+      });
+   };
+
    return (
-      <Card key={todo.id} className="transition-shadow duration-200 hover:shadow-md">
+      <Card className="transition-shadow duration-200 hover:shadow-md">
          <CardContent className="p-6">
             <div className="flex items-start gap-4">
                <div className="flex items-center pt-1">
@@ -126,7 +226,7 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                                     </>
                                  )}
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                                  <Trash2 className="mr-2 h-4 w-4" />
                                  Delete Task
                               </DropdownMenuItem>

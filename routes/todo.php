@@ -10,5 +10,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
       Route::post('/', [TodoController::class, 'store'])->name('todos.store');
       Route::get('/{slug}', [TodoController::class, 'edit'])->name('todos.edit');
       Route::put('/{slug}', [TodoController::class, 'update'])->name('todos.update');
+      Route::delete('/{slug}', [TodoController::class, 'destroy'])->name('todos.destroy');
    });
 });
