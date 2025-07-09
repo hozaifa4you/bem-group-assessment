@@ -18,7 +18,7 @@ class TodoController extends Controller
 
       $todos = Todo::where('user_id', $user->id)
          ->orderBy('created_at', 'desc')
-         ->paginate(20);
+         ->paginate(10);
 
       return Inertia::render('todos/index', ['todos' => $todos]);
    }

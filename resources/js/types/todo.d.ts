@@ -8,3 +8,9 @@ export type Todo = {
    created_at: Date;
    updated_at: Date;
 };
+
+type PaginationLinks = {
+   active: boolean;
+   label: string;
+   url: string | null;
+};

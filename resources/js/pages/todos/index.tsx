@@ -1,3 +1,4 @@
+import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,13 +6,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Todo } from '@/types/todo';
+import { PaginationLinks, Todo } from '@/types/todo';
 import { Head } from '@inertiajs/react';
 import { Calendar, CheckCircle2, Circle, Clock, Edit3, MoreVertical, Plus, Trash2 } from 'lucide-react';
 
 interface TodosProps {
    todos: {
       data: Todo[];
+      links: PaginationLinks[];
    };
 }
 
@@ -26,7 +28,7 @@ const breadcrumbs: BreadcrumbItem[] = [
    },
 ];
 
-const Todos = ({ todos: { data: todos } }: TodosProps) => {
+const Todos = ({ todos: { data: todos, links } }: TodosProps) => {
    return (
       <AppLayout breadcrumbs={breadcrumbs}>
          <Head title="Dashboard" />
@@ -153,6 +155,8 @@ const Todos = ({ todos: { data: todos } }: TodosProps) => {
                      <p className="text-center text-gray-400">No tasks found</p>
                   )}
                </div>
+
+               <Pagination links={links} />
 
                {/* Empty State (hidden when there are todos) */}
                <div className="hidden py-12 text-center">
