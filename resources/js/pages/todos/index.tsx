@@ -1,14 +1,12 @@
 import { Pagination } from '@/components/pagination';
-import { Badge } from '@/components/ui/badge';
+import { TodoCard } from '@/components/todos/todo-card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { PaginationLinks, Todo } from '@/types/todo';
 import { Head } from '@inertiajs/react';
-import { Calendar, CheckCircle2, Circle, Clock, Edit3, MoreVertical, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle2, CheckCircle2Icon, Plus } from 'lucide-react';
 
 interface TodosProps {
    todos: {
@@ -51,108 +49,15 @@ const Todos = ({ todos: { data: todos, links } }: TodosProps) => {
                {/* Todo List */}
                <div className="grid gap-4 md:grid-cols-2">
                   {todos.length > 0 ? (
-                     todos.map((todo) => (
-                        <Card key={todo.id} className="transition-shadow duration-200 hover:shadow-md">
-                           <CardContent className="p-6">
-                              <div className="flex items-start gap-4">
-                                 <div className="flex items-center pt-1">
-                                    <Checkbox checked={todo.is_completed} className="h-5 w-5" />
-                                 </div>
-
-                                 <div className="min-w-0 flex-1">
-                                    <div className="flex items-start justify-between gap-4">
-                                       <div className="flex-1">
-                                          <div className="mb-2 flex items-center gap-2">
-                                             {todo.is_completed ? (
-                                                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                             ) : (
-                                                <Circle className="h-5 w-5 text-gray-400" />
-                                             )}
-                                             <h3
-                                                className={`text-lg font-semibold ${todo.is_completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}
-                                             >
-                                                {todo.title}
-                                             </h3>
-                                          </div>
-                                          <p className="mb-3 leading-relaxed text-gray-600">{todo.description}</p>
-                                          <div className="flex flex-wrap items-center gap-2">
-                                             <Badge
-                                                className={
-                                                   todo.is_completed
-                                                      ? 'border-green-200 bg-green-100 text-green-800'
-                                                      : 'border-gray-200 bg-gray-100 text-gray-800'
-                                                }
-                                             >
-                                                {todo.is_completed ? 'Completed' : 'Pending'}
-                                             </Badge>
-
-                                             {todo.reminder_at && (
-                                                <Badge variant="outline" className="border-purple-200 bg-purple-50 text-purple-700">
-                                                   <Calendar className="mr-1 h-3 w-3" />
-                                                   Reminder: {new Date(todo.reminder_at).toLocaleDateString()}{' '}
-                                                   {new Date(todo.reminder_at).toLocaleTimeString([], {
-                                                      hour: '2-digit',
-                                                      minute: '2-digit',
-                                                   })}
-                                                </Badge>
-                                             )}
-
-                                             {todo.email_sent && <Badge className="border-blue-200 bg-blue-100 text-blue-800">Email Sent</Badge>}
-
-                                             <div className="flex items-center text-sm text-gray-500">
-                                                <Clock className="mr-1 h-4 w-4" />
-                                                Created: {new Date(todo.created_at).toLocaleDateString()}
-                                             </div>
-                                          </div>
-                                       </div>
-
-                                       <div className="flex items-center gap-2">
-                                          <Button variant="ghost" size="sm">
-                                             <Edit3 className="h-4 w-4" />
-                                          </Button>
-                                          <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="sm">
-                                                   <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem>
-                                                   <Edit3 className="mr-2 h-4 w-4" />
-                                                   Edit Task
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                   <Calendar className="mr-2 h-4 w-4" />
-                                                   Set Reminder
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                   {todo.is_completed ? (
-                                                      <>
-                                                         <Circle className="mr-2 h-4 w-4" />
-                                                         Mark as Pending
-                                                      </>
-                                                   ) : (
-                                                      <>
-                                                         <CheckCircle2 className="mr-2 h-4 w-4" />
-                                                         Mark as Complete
-                                                      </>
-                                                   )}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="text-red-600">
-                                                   <Trash2 className="mr-2 h-4 w-4" />
-                                                   Delete Task
-                                                </DropdownMenuItem>
-                                             </DropdownMenuContent>
-                                          </DropdownMenu>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </CardContent>
-                        </Card>
-                     ))
+                     todos.map((todo) => <TodoCard todo={todo} key={todo.id} />)
                   ) : (
-                     <p className="text-center text-gray-400">No tasks found</p>
+                     <div className="flex items-center justify-center md:col-span-2">
+                        <Alert className="max-w-[650px]">
+                           <CheckCircle2Icon />
+                           <AlertTitle>Not found</AlertTitle>
+                           <AlertDescription>No tasks found. You can create a new task by clicking the "Add New Task" button above.</AlertDescription>
+                        </Alert>
+                     </div>
                   )}
                </div>
 

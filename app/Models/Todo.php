@@ -14,15 +14,13 @@ class Todo extends Model
    protected $fillable = [
       'title',
       'description',
-      'email_sent',
+      'complete_at',
       'is_completed',
-      'reminder_at',
       'user_id',
    ];
 
    protected $casts = [
-      'reminder_at' => 'datetime',
-      'email_sent' => 'datetime',
+      'complete_at' => 'datetime',
       'is_completed' => 'boolean',
    ];
 

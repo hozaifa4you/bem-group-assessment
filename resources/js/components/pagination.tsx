@@ -6,6 +6,8 @@ interface PaginationProps {
 }
 
 const Pagination = ({ links }: PaginationProps) => {
+   if (links.length <= 3) return null;
+
    return (
       <div className="my-4 flex items-center justify-center gap-4">
          {links.map((link) => (

@@ -19,10 +19,9 @@ class TodoFactory extends Factory
    {
 
       return [
-         'title' => $this->faker->sentence(),
-         'description' => $this->faker->sentence(10),
-         'reminder_at' => $this->faker->dateTime(),
-         'email_sent' => $this->faker->optional()->dateTime(),
+         'title' => $this->faker->sentence(3),
+         'description' => $this->faker->paragraph(2),
+         'complete_at' => $this->faker->dateTimeBetween('now', '+1 month'),
          'is_completed' => $this->faker->boolean(),
          'user_id' => 1,
       ];

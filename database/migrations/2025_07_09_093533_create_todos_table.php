@@ -15,8 +15,7 @@ return new class extends Migration
          $table->id();
          $table->string("title");
          $table->text("description")->nullable();
-         $table->dateTime("reminder_at");
-         $table->dateTime("email_sent")->nullable();
+         $table->dateTime("complete_at")->nullable();
          $table->boolean("is_completed")->default(false);
          $table->foreignId("user_id")->constrained()->onDelete('cascade');
          $table->timestamps();
