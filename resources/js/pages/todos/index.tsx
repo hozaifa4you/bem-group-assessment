@@ -1,11 +1,11 @@
 import { Pagination } from '@/components/pagination';
 import { TodoCard } from '@/components/todos/todo-card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { PaginationLinks, Todo } from '@/types/todo';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { CheckCircle2, CheckCircle2Icon, Plus } from 'lucide-react';
 
 interface TodosProps {
@@ -26,10 +26,12 @@ const breadcrumbs: BreadcrumbItem[] = [
    },
 ];
 
-const Todos = ({ todos: { data: todos, links } }: TodosProps) => {
+const Todos = ({ todos: { data: todos, links }, ...rest }: TodosProps) => {
+   console.log(rest);
+
    return (
       <AppLayout breadcrumbs={breadcrumbs}>
-         <Head title="Dashboard" />
+         <Head title="Todos" />
          <div className="min-h-screen bg-gray-50/50">
             <div className="container mx-auto max-w-6xl px-4 py-8">
                {/* Header */}
@@ -39,10 +41,10 @@ const Todos = ({ todos: { data: todos, links } }: TodosProps) => {
                         <h1 className="text-3xl font-bold text-gray-900">My Tasks</h1>
                         <p className="mt-1 text-gray-600">Manage and track your daily tasks</p>
                      </div>
-                     <Button className="w-fit">
+                     <Link href={route('todos.create')} className={buttonVariants({ class: 'w-fit' })}>
                         <Plus className="mr-2 h-4 w-4" />
                         Add New Task
-                     </Button>
+                     </Link>
                   </div>
                </div>
 

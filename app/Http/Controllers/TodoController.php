@@ -22,15 +22,13 @@ class TodoController extends Controller
 
       return Inertia::render('todos/index', ['todos' => $todos]);
    }
-   /**
-    * Show the form for viewing the todo.
-    */
+
    /**
     * Show the form for creating a new resource.
     */
    public function create()
    {
-      //
+      return Inertia('todos/create');
    }
 
    /**
@@ -38,7 +36,16 @@ class TodoController extends Controller
     */
    public function store(Request $request)
    {
-      //
+      $validated = $request->validate([
+         'title' => ['required', 'string', 'min:5', 'max:190'],
+         'description' => ['nullable', 'string', 'min:10', 'max:290'],
+         'complete_at' => ['required', 'date'],
+      ]);
+
+      $auth = Auth::user();
+      Todo::create([...$validated, 'user_id' => $auth->id]);
+
+      return redirect()->intended(route('todos', absolute: false));
    }
 
    /**
