@@ -26,9 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
    },
 ];
 
-const Todos = ({ todos: { data: todos, links }, ...rest }: TodosProps) => {
-   console.log(rest);
-
+const Todos = ({ todos: { data: todos, links } }: TodosProps) => {
    return (
       <AppLayout breadcrumbs={breadcrumbs}>
          <Head title="Todos" />

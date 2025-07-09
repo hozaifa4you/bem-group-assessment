@@ -1,10 +1,11 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getReminderTime, isOverdue, isUpcoming } from '@/lib/utils';
 import { Todo } from '@/types/todo';
+import { Link } from '@inertiajs/react';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { Calendar, CheckCircle2, Circle, Clock, Edit3, MoreVertical, Trash2 } from 'lucide-react';
 
@@ -90,9 +91,15 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                      </div>
 
                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
+                        <Link
+                           href={route('todos.edit', { slug: todo.slug ?? todo.id })}
+                           className={buttonVariants({
+                              variant: 'ghost',
+                              size: 'icon',
+                           })}
+                        >
                            <Edit3 className="h-4 w-4" />
-                        </Button>
+                        </Link>
                         <DropdownMenu>
                            <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm">
@@ -100,13 +107,11 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                               </Button>
                            </DropdownMenuTrigger>
                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                 <Edit3 className="mr-2 h-4 w-4" />
-                                 Edit Task
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                 <Calendar className="mr-2 h-4 w-4" />
-                                 Change Due Date
+                              <DropdownMenuItem asChild>
+                                 <Link href={route('todos.edit', { slug: todo.slug ?? todo.id })}>
+                                    <Edit3 className="mr-2 h-4 w-4" />
+                                    Edit Task
+                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem>
                                  {todo.is_completed ? (

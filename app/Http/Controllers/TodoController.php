@@ -43,7 +43,16 @@ class TodoController extends Controller
       ]);
 
       $auth = Auth::user();
-      Todo::create([...$validated, 'user_id' => $auth->id]);
+      $slug = str($validated['title'])
+         ->slug()
+         ->toString();
+
+      $existingTodo = Todo::where('slug', $slug)->first();
+      if ($existingTodo) {
+         $slug = $slug . '-' . time();
+      }
+
+      Todo::create([...$validated, 'user_id' => $auth->id, 'slug' => $slug]);
 
       return redirect()->intended(route('todos', absolute: false));
    }
@@ -59,17 +68,36 @@ class TodoController extends Controller
    /**
     * Show the form for editing the specified resource.
     */
-   public function edit(string $id)
+   public function edit(string|int $slug)
    {
-      //
+      $todo = Todo::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+
+      if ($todo->user_id !== Auth::id()) {
+         abort(403, 'Unauthorized action.');
+      }
+
+      return Inertia::render('todos/edit', ['todo' => $todo]);
    }
 
    /**
     * Update the specified resource in storage.
     */
-   public function update(Request $request, string $id)
+   public function update(Request $request, string $slug)
    {
-      //
+      $todo = Todo::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+      if ($todo->user_id !== Auth::id()) {
+         abort(403, 'Unauthorized action.');
+      }
+
+      $validated = $request->validate([
+         'title' => ['required', 'string', 'min:5', 'max:190'],
+         'description' => ['nullable', 'string', 'min:10', 'max:290'],
+         'complete_at' => ['required', 'date'],
+      ]);
+
+      $todo->update($validated);
+
+      return redirect()->intended(route('todos', absolute: false));
    }
 
    /**

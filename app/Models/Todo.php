@@ -17,6 +17,7 @@ class Todo extends Model
       'complete_at',
       'is_completed',
       'user_id',
+      'slug',
    ];
 
    protected $casts = [

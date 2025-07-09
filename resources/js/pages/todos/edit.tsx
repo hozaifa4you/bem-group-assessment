@@ -6,46 +6,42 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { getReminderTime } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
+import { Todo } from '@/types/todo';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Clock, Plus, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Edit3, FilePenLine, X } from 'lucide-react';
 import { FormEventHandler } from 'react';
 import DateTimePicker from 'react-datetime-picker';
+import { CreateTodoForm } from './create';
 
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import 'react-datetime-picker/dist/DateTimePicker.css';
-
-export interface CreateTodoForm {
-   title: string;
-   description?: string;
-   complete_at: Date | null; // ISO datetime string
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
    {
       title: 'Todos',
       href: '/todos',
    },
-   { title: 'Create', href: route('todos.create') },
+   { title: 'Edit', href: '/' },
 ];
 
-const CreateTodo = () => {
-   const { data, setData, post, processing, errors, reset } = useForm<Required<CreateTodoForm>>({
-      title: '',
-      description: '',
-      complete_at: new Date(new Date().getTime() + 30 * 60 * 1000),
+const EditTodoPage = ({ todo }: { todo: Todo }) => {
+   const { data, setData, put, processing, errors, reset } = useForm<Required<CreateTodoForm>>({
+      title: todo.title,
+      description: todo.description ?? '',
+      complete_at: new Date(todo.complete_at),
    });
 
    const submit: FormEventHandler = (e) => {
       e.preventDefault();
-      post(route('todos.store'), {
+      put(route('todos.update', { slug: todo.slug ?? todo.id }), {
          onFinish: () => reset('complete_at', 'description', 'title'),
       });
    };
 
    return (
       <AppLayout breadcrumbs={breadcrumbs}>
-         <Head title="Create Todo" />
+         <Head title="Edit Todo" />
 
          <div className="min-h-screen bg-gray-50/50">
             <div className="container mx-auto max-w-2xl px-4 py-8">
@@ -56,8 +52,8 @@ const CreateTodo = () => {
                         <ArrowLeft className="h-4 w-4" />
                      </Link>
                      <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Create New Todo</h1>
-                        <p className="mt-1 text-gray-600">Add a new todo to your todo list</p>
+                        <h1 className="text-3xl font-bold text-gray-900">Edit Todo</h1>
+                        <p className="mt-1 text-gray-600">Update your todo details below</p>
                      </div>
                   </div>
                </div>
@@ -66,10 +62,10 @@ const CreateTodo = () => {
                <Card>
                   <CardHeader>
                      <CardTitle className="flex items-center gap-2">
-                        <Plus className="h-5 w-5" />
+                        <Edit3 className="h-5 w-5" />
                         Todo Details
                      </CardTitle>
-                     <CardDescription>Fill in the information below to create your new todo</CardDescription>
+                     <CardDescription>Update the details of your todo item below.</CardDescription>
                   </CardHeader>
                   <CardContent>
                      <form className="space-y-6" onSubmit={submit}>
@@ -148,17 +144,17 @@ const CreateTodo = () => {
                         )}
 
                         {/* Form Actions */}
-                        <div className="flex flex-col gap-3 pt-4 sm:flex-row">
+                        <div className="flex flex-col gap-2 pt-4 sm:flex-row">
                            <Button type="submit" className="flex-1">
                               {processing ? (
                                  <>
                                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                                    Creating todo...
+                                    Updating todo...
                                  </>
                               ) : (
                                  <>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Create Todo
+                                    <FilePenLine className="mr-2 h-4 w-4" />
+                                    Update Todo
                                  </>
                               )}
                            </Button>
@@ -182,4 +178,4 @@ const CreateTodo = () => {
    );
 };
 
-export default CreateTodo;
+export default EditTodoPage;
