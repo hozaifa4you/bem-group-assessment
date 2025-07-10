@@ -6,11 +6,14 @@ use App\Http\Controllers\TodoController;
 use App\Mail\TodoReminderMail;
 use App\Models\Todo;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Traits\EmailLogger;
+use Throwable;
 
 class SendTodoReminder extends Command
 {
+   use EmailLogger;
+
    /**
     * The name and signature of the console command.
     *
@@ -33,12 +36,12 @@ class SendTodoReminder extends Command
       $controller = new TodoController();
       $todos_all = $controller->getTodosForReminders();
 
-      try {
-         $todos_all->each(function ($x) {
-            $todos = $x['todos'];
-            $user = $x['user'];
-            $to = $user['email'];
+      $todos_all->each(function ($x) {
+         $todos = $x['todos'];
+         $user = $x['user'];
+         $to = $user['email'];
 
+         try {
             Mail::to($to)->queue(new TodoReminderMail($user, $todos));
 
             $todos->each(function ($todo) {
@@ -46,18 +49,26 @@ class SendTodoReminder extends Command
                   ->update(['is_reminder_sent' => true]);
             });
 
-            Log::info('Todo reminder email queued for user', [
-               'user_id' => $user['id'],
-               'email' => $to,
-               'todos_count' => count($todos),
-               'timestamp' => now(),
+            $this->logEmail([
+               'to_email' => $to,
+               'subject'  => 'Todo Reminder',
+               'status'   => 'sent',
+               'type'     => 'reminder',
+               'sent_at'  => now(),
             ]);
-         });
 
-         $this->info('Todo reminder emails queued successfully.');
-      } catch (\Throwable $th) {
-         Log::error('Failed to queue todo reminder email: ' . $th->getMessage());
-         $this->error('Failed to queue todo reminder email: ' . $th->getMessage());
-      }
+            $this->info('Todo reminder emails queued successfully.');
+         } catch (Throwable $th) {
+            $this->logEmail([
+               'to_email'       => $to ?? 'unknown',
+               'subject'        => 'Todo Reminder',
+               'status'         => 'failed',
+               'type'           => 'reminder',
+               'sent_at'        => now(),
+               'error_message'  => $th->getMessage(),
+            ]);
+            $this->error('Failed to queue todo reminder email: ' . $th->getMessage());
+         }
+      });
    }
 }
