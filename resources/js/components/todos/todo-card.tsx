@@ -3,6 +3,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn, getReminderTime, isOverdue, isUpcoming } from '@/lib/utils';
 import { Todo } from '@/types/todo';
 import { Link, router } from '@inertiajs/react';
@@ -10,7 +11,6 @@ import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { Calendar, CheckCircle2, Circle, Clock, Edit3, MailCheck, MailWarning, MoreVertical, Trash2 } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface TodoCardProps {
    todo: Todo;
@@ -111,7 +111,22 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                description: error.message || 'Failed to delete todo. Please try again.',
             });
          },
-         onFinish: () => {},
+      });
+   };
+
+   const handleComplete = () => {
+      router.delete(route('todos.complete', { slug: todo.slug ?? todo.id }), {
+         preserveScroll: true,
+         onSuccess: () => {
+            toast('Todo updated', {
+               description: `The todo has been marked as ${todo.is_completed ? 'incomplete' : 'completed'}.`,
+            });
+         },
+         onError: (error) => {
+            toast('Update Failed', {
+               description: error.message || 'Failed to update todo. Please try again.',
+            });
+         },
       });
    };
 
@@ -229,7 +244,7 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                                     Edit Task
                                  </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={handleComplete}>
                                  {todo.is_completed ? (
                                     <>
                                        <Circle className="mr-2 h-4 w-4" />

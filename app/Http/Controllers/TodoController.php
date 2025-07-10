@@ -111,7 +111,20 @@ class TodoController extends Controller
    /**
     * Mark the specified todo as completed.
     */
-   public function complete(string $slug) {}
+   public function complete(string $slug)
+   {
+      $todo = Todo::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+      if ($todo->user_id !== Auth::id()) {
+         abort(403, 'Unauthorized action.');
+      }
+
+      $todo->update([
+         'is_completed' => !$todo->is_completed,
+         'completed_at' => !$todo->is_completed ? now() : null,
+      ]);
+
+      return redirect()->intended(route('todos', absolute: false));
+   }
 
    /**
     * Get todos for reminders.
