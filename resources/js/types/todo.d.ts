@@ -5,6 +5,7 @@ export type Todo = {
    description: string | null;
    complete_at: Date;
    is_completed: boolean;
+   is_reminder_sent: boolean;
    created_at: Date;
    updated_at: Date;
 };

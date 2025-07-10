@@ -3,13 +3,14 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { getReminderTime, isOverdue, isUpcoming } from '@/lib/utils';
+import { cn, getReminderTime, isOverdue, isUpcoming } from '@/lib/utils';
 import { Todo } from '@/types/todo';
 import { Link, router } from '@inertiajs/react';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
-import { Calendar, CheckCircle2, Circle, Clock, Edit3, MoreVertical, Trash2 } from 'lucide-react';
+import { Calendar, CheckCircle2, Circle, Clock, Edit3, MailCheck, MailWarning, MoreVertical, Trash2 } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface TodoCardProps {
    todo: Todo;
@@ -191,6 +192,21 @@ const TodoCard = ({ todo }: TodoCardProps) => {
                      </div>
 
                      <div className="flex items-center gap-2">
+                        <Tooltip>
+                           <TooltipTrigger asChild>
+                              <div className={cn('cursor-pointer rounded-sm bg-slate-50 p-1', { 'bg-green-50': todo.is_reminder_sent })}>
+                                 {todo.is_reminder_sent ? (
+                                    <MailCheck className="size-4 text-green-500" />
+                                 ) : (
+                                    <MailWarning className="size-4 text-slate-500" />
+                                 )}
+                              </div>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                              <p>{todo.is_reminder_sent ? 'Reminder sent' : 'Waiting for reminder'}</p>
+                           </TooltipContent>
+                        </Tooltip>
+
                         <Link
                            href={route('todos.edit', { slug: todo.slug ?? todo.id })}
                            className={buttonVariants({
