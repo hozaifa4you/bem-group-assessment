@@ -41,7 +41,6 @@ class SendTodoReminder extends Command
 
             Mail::to($to)->queue(new TodoReminderMail($user, $todos));
 
-            // update todos to mark reminder as sent
             $todos->each(function ($todo) {
                Todo::where('id', $todo['id'])
                   ->update(['is_reminder_sent' => true]);
