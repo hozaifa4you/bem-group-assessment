@@ -25,8 +25,6 @@ class LogAllSentEmails
     */
    public function handle(MessageSent $event): void
    {
-      Log::info('Event: ', $event);
-
       try {
          $message = $event->message;
          $to = $message->getTo();
@@ -37,33 +35,50 @@ class LogAllSentEmails
             return;
          }
 
-         // Get email address from the first recipient
-         // Symfony mailer format is typically [email => name]
-         $emailAddress = array_key_first($to);
+         $emailAddress = '';
 
-         // Get email type if available from mailable class
+         if (is_array($to)) {
+            $firstRecipient = reset($to);
+
+            if (is_string(array_key_first($to))) {
+               $emailAddress = array_key_first($to);
+            } elseif (is_object($firstRecipient) && method_exists($firstRecipient, 'getAddress')) {
+               $emailAddress = $firstRecipient->getAddress();
+            } elseif (is_array($firstRecipient) && isset($firstRecipient['address'])) {
+               $emailAddress = $firstRecipient['address'];
+            } else {
+               $emailAddress = (string) $firstRecipient ?: 'unknown@example.com';
+               Log::warning('Could not determine email address format', ['to' => $to]);
+            }
+         }
+
          $emailType = 'generic';
          $mailable = $event->data['mailable'] ?? null;
          if ($mailable && method_exists($mailable, 'getEmailType')) {
             $emailType = $mailable->getEmailType();
          } elseif ($mailable) {
-            // Try to infer type from class name
             $className = get_class($mailable);
             if (strpos($className, 'TodoReminder') !== false) {
                $emailType = 'todo_reminder';
             }
          }
 
-         EmailLog::create([
-            'to_email' => $emailAddress,
-            'subject' => $message->getSubject(),
-            'status' => 'success',
-            'type' => $emailType,
-            'sent_at' => Carbon::now(),
-         ]);
+         if (!empty($emailAddress)) {
+            EmailLog::create([
+               'to_email' => $emailAddress,
+               'subject' => $message->getSubject(),
+               'status' => 'success',
+               'type' => $emailType,
+               'sent_at' => Carbon::now(),
+            ]);
+         } else {
+            Log::warning('Could not log email - no valid recipient address found', [
+               'subject' => $message->getSubject()
+            ]);
+         }
 
          Log::info('Email sent successfully', [
-            'to' => $emailAddress,
+            'to' => $emailAddress ?: 'unknown@example.com',
             'subject' => $message->getSubject(),
             'type' => $emailType
          ]);
