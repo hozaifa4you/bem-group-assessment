@@ -49,24 +49,25 @@ class SendTodoReminder extends Command
                   ->update(['is_reminder_sent' => true]);
             });
 
-            $this->logEmail([
-               'to_email' => $to,
-               'subject'  => 'Todo Reminder',
-               'status'   => 'sent',
-               'type'     => 'reminder',
-               'sent_at'  => now(),
-            ]);
+            // $this->logEmail([
+            //    'to_email' => $to,
+            //    'subject'  => 'Todo Reminder',
+            //    'status'   => 'success',
+            //    'type'     => 'reminder',
+            //    'sent_at'  => now(),
+            // ]);
 
             $this->info('Todo reminder emails queued successfully.');
          } catch (Throwable $th) {
-            $this->logEmail([
-               'to_email'       => $to ?? 'unknown',
-               'subject'        => 'Todo Reminder',
-               'status'         => 'failed',
-               'type'           => 'reminder',
-               'sent_at'        => now(),
-               'error_message'  => $th->getMessage(),
-            ]);
+            // $this->logEmail([
+            //    'to_email'       => $to ?? 'unknown',
+            //    'subject'        => 'Todo Reminder',
+            //    'status'         => 'failed',
+            //    'type'           => 'reminder',
+            //    'sent_at'        => now(),
+            //    'error_message'  => $th->getMessage(),
+            // ]);
+
             $this->error('Failed to queue todo reminder email: ' . $th->getMessage());
          }
       });

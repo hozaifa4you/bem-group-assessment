@@ -30,6 +30,14 @@ class TodoReminderMail extends Mailable implements ShouldQueue
    }
 
    /**
+    * Get the type of email for logging purposes.
+    */
+   public function getEmailType(): string
+   {
+      return 'todo_reminder';
+   }
+
+   /**
     * Get the message envelope.
     */
    public function envelope(): Envelope
