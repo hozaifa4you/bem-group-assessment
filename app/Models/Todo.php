@@ -16,6 +16,7 @@ class Todo extends Model
       'description',
       'complete_at',
       'is_completed',
+      'is_reminder_sent',
       'user_id',
       'slug',
    ];
@@ -23,6 +24,7 @@ class Todo extends Model
    protected $casts = [
       'complete_at' => 'datetime',
       'is_completed' => 'boolean',
+      'is_reminder_sent' => 'boolean',
    ];
 
    public function user()

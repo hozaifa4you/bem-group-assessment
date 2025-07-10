@@ -37,3 +37,42 @@ export const getMinDateTime = () => {
    const now = new Date();
    return formatDateTimeLocal(now);
 };
+
+// const todos = [
+//    {
+//       user: {
+//          id: 3,
+//          name: 'The A Team 2',
+//          email: 'yousuf360.dev@gmail.com',
+//          email_verified_at: '2025-07-09T18:55:30.000000Z',
+//          created_at: '2025-07-09T18:55:14.000000Z',
+//          updated_at: '2025-07-09T18:55:30.000000Z',
+//       },
+//       todos: [
+//          {
+//             id: 56,
+//             title: 'The yousuf dev todo',
+//             description: null,
+//             complete_at: '2025-07-09T19:05:00.000000Z',
+//             is_completed: false,
+//             user_id: 3,
+//             created_at: '2025-07-09T18:56:01.000000Z',
+//             updated_at: '2025-07-09T18:57:38.000000Z',
+//             slug: 'the-yousuf-dev-todo',
+//             is_reminder_sent: false,
+//          },
+//          {
+//             id: 57,
+//             title: 'The todo description',
+//             description: null,
+//             complete_at: '2025-07-09T19:05:00.000000Z',
+//             is_completed: false,
+//             user_id: 3,
+//             created_at: '2025-07-09T18:56:18.000000Z',
+//             updated_at: '2025-07-09T18:57:32.000000Z',
+//             slug: 'the-todo-description',
+//             is_reminder_sent: false,
+//          },
+//       ],
+//    },
+// ];

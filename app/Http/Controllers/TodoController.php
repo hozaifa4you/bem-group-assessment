@@ -58,14 +58,6 @@ class TodoController extends Controller
    }
 
    /**
-    * Display the specified resource.
-    */
-   public function show(string $id)
-   {
-      //
-   }
-
-   /**
     * Show the form for editing the specified resource.
     */
    public function edit(string|int $slug)
@@ -113,5 +105,44 @@ class TodoController extends Controller
       $todo->delete();
 
       return redirect()->intended(route('todos', absolute: false));
+   }
+
+
+   /**
+    * Mark the specified todo as completed.
+    */
+   public function complete(string $slug) {}
+
+   /**
+    * Get todos for reminders.
+    */
+   public function getTodosForReminders()
+   {
+      $now = now();
+      $tenMinutesLater = $now->copy()->addMinutes(10);
+
+      $todos = Todo::with('user')
+         ->where('is_completed', false)
+         ->where('is_reminder_sent', false)
+         ->whereBetween('complete_at', [$now, $tenMinutesLater])
+         ->get();
+
+      return $todos
+         ->groupBy(fn($todo) => $todo->user->email)
+         ->map(function ($group) {
+            $user = $group->first()->user->toArray();
+
+            $todos = $group->map(function ($todo) {
+               $todoArray = $todo->toArray();
+               unset($todoArray['user']);
+               return $todoArray;
+            })->values();
+
+            return [
+               'user' => $user,
+               'todos' => $todos,
+            ];
+         })
+         ->values();
    }
 }
